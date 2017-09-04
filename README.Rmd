@@ -1,15 +1,15 @@
-#Installation
+# Installation
 ## Clone or install the repository
 Link to the repository: https://github.com/Davidovich4/fraud-detection.git
 
 ## Install packages
-In case you don't have the packages used in this app you need to install them beforehand. Use the following command:
+In case you don't have the packages used in this app you need to install them beforehand. Use the following commands:
 
 ```r
-required_packages <- c("shiny", "shinyjs", "readr", "magrittr", "dplyr", "xgboost", "DT", "pROC")
+required_packages <- c("shiny", "shinyjs", "readr", "magrittr", "dplyr", "xgboost", "DT", "pROC", "rpart", "rpart.plot", "caret", "e1071", "stringi")
 new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages)
 ```
 
-#Run app
-Run either in RStudio or host on Shiny Server or http://shinyapps.io 
+# Run app
+Run either in RStudio or host on Shiny Server or http://shinyapps.io
