@@ -12,4 +12,4 @@ if(length(new_packages)) install.packages(new_packages)
 ```
 
 # Run app
-Run either in RStudio or host on Shiny Server or http://shinyapps.io
+Run either in RStudio with `shiny::runApp()` or host on Shiny Server or http://shinyapps.io
