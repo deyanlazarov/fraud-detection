@@ -1,9 +1,9 @@
 observeEvent(input$btn_go, {
   withBusyIndicatorServer("btn_go", {
-    xgb_train <- xgb.DMatrix(rv$train %>% select(-class) %>% as.matrix(), label = rv$train$class)
-    xgb_test <- xgb.DMatrix(rv$test %>% select(-class) %>% as.matrix(), label = rv$test$class)
     
     if (input$rb_model == "xgboost") {
+            xgb_train <- xgb.DMatrix(rv$train %>% select(-class) %>% as.matrix(), label = rv$train$class)
+            xgb_test <- xgb.DMatrix(rv$test %>% select(-class) %>% as.matrix(), label = rv$test$class)
             model <- xgb.train(data = xgb_train,
                                params = list(
                                  objective = "binary:logistic",
@@ -30,23 +30,6 @@ observeEvent(input$btn_go, {
               DT::formatRound('Cover', 2) %>% 
               DT::formatRound('Frequency', 2)
             
-            
-            output$ui_log <- renderUI( {
-              tagList(
-                verticalLayout(
-                  h3("Log"),
-                  DT::renderDataTable(model_log, rownames = F, options = list(searching = F, lengthChange = F))
-                )
-              )
-            })    
-            
-            output$ui_importance <- renderUI( {
-              tagList(
-                h3("Importance of variables"),
-                DT::renderDataTable(model_importance)
-              )
-            })
-            
             test_model = predict(model,
                                  newdata = as.matrix(rv$test %>% select(-class)),
                                  ntreelimit = model$bestInd)
@@ -55,22 +38,54 @@ observeEvent(input$btn_go, {
             model_keydata <- cbind(model$niter, model$best_iteration, model$best_ntreelimit, model$best_score)
             colnames(model_keydata) <- c("niter", "best iteration", "best ntree limit", "best score")
             
-            output$ui_roc <- renderUI( {
+            output$ui_main <- renderUI( {
               tagList(
-                h3("Roc curve"),
-                verticalLayout(
-                  renderPlot(plot(test_roc)),
-                  h3("Key values"),
-                  DT::renderDataTable(
-                    DT::datatable(
-                      model_keydata,
-                      rownames = F, options = list(dom = "t"))
+                fluidRow(
+                  column(4,
+                         verticalLayout(
+                           h3("Log"),
+                           DT::renderDataTable(model_log, rownames = F, options = list(searching = F, lengthChange = F))
+                         )
+                  ),
+                  column(8,
+                         h3("Roc curve"),
+                         verticalLayout(
+                           renderPlot(plot(test_roc)),
+                           h3("Key values"),
+                           DT::renderDataTable(
+                             DT::datatable(
+                               model_keydata,
+                               rownames = F, options = list(dom = "t"))
+                           )
+                         ) 
+                  )
+                ),
+                fluidRow(
+                  column(4,
+                         h3("Importance of variables"),
+                         DT::renderDataTable(model_importance)    
                   )
                 ) 
               )
             })
-    } else if (input$rb_model == "Random forest") {
+    } else if (input$rb_model == "Decision tree") {
+      rf_model <- rpart(class ~ ., data = rv$train, method = "class", minbucket = input$minbucket)
       
+      prediction <- predict(rf_model, rv$test, type = "class")
+      conf_mat <- confusionMatrix(rv$test$class, prediction)
+      
+      output$ui_main <- renderUI( {
+        tagList(
+          fluidRow(
+            column(6,
+                   h3("Confusion Matrix"),
+                   renderPrint(conf_mat)),
+            column(6,
+                   h3("Tree plot"),
+                   renderPlot(prp(rf_model)))
+          )
+        )
+      })
     }
   })
 })

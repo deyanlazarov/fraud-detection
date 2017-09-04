@@ -1,11 +1,11 @@
-div(
+div(id = "page3",
   sidebarPanel(id = "page3_sidebar",
     h3("Choose a predictor algorithm"),
-    radioButtons("rb_model", label = "", choices = c("xgboost", "Random forest")),
+    radioButtons("rb_model", label = "", choices = c("xgboost", "Decision tree")),
+    withBusyIndicatorUI(
+      actionButton("btn_go", "Build model", class = "btn-primary")
+    ),
     conditionalPanel(condition = "input.rb_model == 'xgboost'",
-                     withBusyIndicatorUI(
-                       actionButton("btn_go", "Build model", class = "btn-primary")
-                     ),
                      h4("xgboost parameters"),
                      wellPanel(
                        fluidRow(
@@ -24,34 +24,16 @@ div(
                        )
                      )
     ),
-    conditionalPanel(condition = "input.rb_model == 'Random forest'",
-                     h4("Random forest parameters"),
+    conditionalPanel(condition = "input.rb_model == 'Decision tree'",
+                     h4("Decision tree parameters"),
                      wellPanel(
                        fluidRow(
-                         column(5,
-                                #Parameters
-                                ""
-                         )
+                         sliderInput("minbucket", "Minimum no. of buckets", min = 2, max = 50, value = 20)
                        )
                      )
     )
   ),
   mainPanel(
-    fluidRow(
-      column(4,
-             uiOutput("ui_log")
-      ),
-      column(8,
-             uiOutput("ui_roc")
-      )
-    ),
-    fluidRow(
-      column(4,
-             uiOutput("ui_importance")       
-      ),
-      column(8,
-             uiOutput("ui_plot")       
-      )
-    )
+    uiOutput("ui_main")
   )
 )
