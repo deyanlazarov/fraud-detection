@@ -9,7 +9,7 @@ create_samples <- function(data, method, ui_value, times = 1) {
 }
 
 function(input, output, session) {
-  session$onSessionEnded(stopApp)
+  #session$onSessionEnded(stopApp)
   
   source(file.path("server", "nav-page.R"),  local = TRUE)$value
   
