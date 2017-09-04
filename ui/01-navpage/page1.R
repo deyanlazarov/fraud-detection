@@ -9,7 +9,7 @@ div(
     )
   ),
   h3("Let's start by choosing a dataset"),
-  p("Either use the Credit Card Fraud Detection dataset from Kaggle or upload your own."),
+  p("Either use the", tags$a(href = "https://www.kaggle.com/dalpozz/creditcardfraud", "Credit Card Fraud Detection"), "dataset from Kaggle or upload your own."),
   h4("Requirements"),
   p("The uploaded file should be in .csv format (separated by comma [,]). The file needs to be in the following structure:"),
   tags$ul(
@@ -22,6 +22,7 @@ div(
   ),
   fluidRow(style = "padding-left: 15px;",  
     conditionalPanel(condition = "input.rb_dataset == 'Upload a file'",
-                   fileInput("file_upload", "", accept = "csv"))
+                   fileInput("file_upload", "", accept = ".csv"),
+                   column(2, textOutput("file_error")))
   )
 )

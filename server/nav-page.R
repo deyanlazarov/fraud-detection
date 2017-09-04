@@ -30,16 +30,25 @@ observeEvent(input$nextBtn, {
   if (rv$page == 1) {
     # Upload file
     if (input$rb_dataset == "Upload a file") {
-      # validate(
-      #   need(!is.null(input$file_upload), "No file has been specified!")
-      # )
+      req(input$file_upload)
+      validate(
+        need( (stri_split(input$file_upload$name, regex = "\\.") %>% unlist() %>% tail(1)) == "csv", "File is not csv")
+      )
+      
       rv$data <- readr::read_csv(file = input$file_upload$datapath)
+      colnames(rv$data) <- stringi::stri_trans_tolower(colnames(rv$data))
+      
+      rows <- nrow(rv$data)
+      rv$data$id <- 1:rows
+      
       navPage(1)
-    } else if (input$rb_dataset == "Kaggle dataset") {
-     rv$data <- kaggle_data
-     
-     navPage(1)
     }
+    
+    if (input$rb_dataset == "Kaggle dataset") {
+      rv$data <- kaggle_data
+      navPage(1)
+    }
+    
   } else if (rv$page == 2) {
     # Validation
     method <- input$slt_method
@@ -63,6 +72,9 @@ observeEvent(input$nextBtn, {
       shinyjs::html(id = "nextBtn", html = "Finish")
       
       navPage(1)
+      output$ui_main <- renderUI( {
+        
+      })
     }
   }
   else if (rv$page == 3) {
